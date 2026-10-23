@@ -1,7 +1,7 @@
 // =============== KONFIGURASI MAKTABAH MALIKA ===============
 window.MALIKA_CONFIG = {
-  googleBooksKey: "",          // Kosongkan jika fokus ke Kitab Kuning untuk menghindari error 429
-  openAlexMailto: "",          
+  googleBooksKey: "AIzaSyAtZPC5BHLz_9sWrwy6lJL2cyXRQrttGm8",          // Kosongkan jika fokus ke Kitab Kuning untuk menghindari error 429
+  openAlexMailto: "AIzaSyAJq1ohtLjh6jxMTiqnRzmc-K4LqsWR9gY",          
 
   sanusi: {
     enabled: true,
