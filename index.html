@@ -106,7 +106,7 @@ function card(it, i, q){
 $("#f").addEventListener("submit", async e => {
   e.preventDefault();
   const q = $("#q").value.trim(); if (!q) return;
-  $("#st").textContent = "Mencari isi kitab “" + q + ” di server Ahmad Sanusi…"; 
+  $("#st").textContent = "Mencari isi kitab “" + q + "” di server Ahmad Sanusi…"; 
   $("#res").innerHTML = ""; 
   store = [];
 
@@ -180,7 +180,8 @@ async function muatTeksBab(slug, nomorBab) {
     const dataBab = jBab.data || jBab;
 
     let kontenArab = dataBab.teks_arab || dataBab.arab || "";
-    let konten Indo = dataBab.teks_indonesia || dataBab.terjemah || dataBab.konten || "";
+    // PERBAIKAN: Spasi dihapus dan penamaan variabel diseragamkan menjadi kontonIndo
+    let kontenIndo = dataBab.teks_indonesia || dataBab.terjemah || dataBab.konten || "";
 
     b.innerHTML = `
       <button onclick="history.back()" style="margin-bottom:10px; padding:4px 10px; font-size:0.8rem;">← Kembali ke Daftar Bab</button>
