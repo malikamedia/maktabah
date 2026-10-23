@@ -1,3 +1,76 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maktabah Malika Boarding School</title>
+<link rel="icon" href="favicon.png">
+<style>
+:root{--navy:#14264a;--navy2:#1f3a6e;--cream:#faf5ec;--wood:#d9b98a;--card:#fff;--text:#1d2433;--muted:#667085;--line:#e6dccb}
+@media(prefers-color-scheme:dark){:root{--cream:#0f1729;--card:#18233d;--text:#eef1f7;--muted:#a3adc2;--line:#2a3857;--navy:#e8d9bd;--navy2:#d9b98a}}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--cream);color:var(--text)}
+header{background:linear-gradient(180deg,#14264acc,#14264aee),url(foto.jpg) center/cover;color:#fff;text-align:center;padding:28px 16px 64px}
+.logo{background:#fff;border-radius:18px;padding:10px 18px;display:inline-block;box-shadow:0 4px 18px #0004}
+.logo img{height:110px;width:auto;display:block}
+header h1{margin:0;font-size:1.8rem}header p{margin:6px 0 0;opacity:.85}
+.ar{font-size:1.4rem;margin-bottom:4px}
+.box{max-width:820px;margin:-30px auto 0;padding:0 14px}
+form{display:flex;gap:8px;background:var(--card);padding:10px;border-radius:14px;box-shadow:0 6px 24px #0002}
+input[type=search]{flex:1;border:0;font-size:1.05rem;padding:10px;background:transparent;color:var(--text);outline:0;min-width:0}
+button{cursor:pointer;border:0;border-radius:10px;padding:10px 18px;font-weight:600;background:#14264a;color:#fff}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:14px 2px}
+.chips label{background:var(--card);border:1px solid var(--line);padding:6px 12px;border-radius:99px;font-size:.88rem;cursor:pointer;user-select:none}
+.chips input{margin-right:6px}
+main{max-width:820px;margin:0 auto;padding:0 14px 60px}
+.status{color:var(--muted);margin:10px 2px;font-size:.92rem}
+.group{margin:22px 0 8px;font-weight:700;color:var(--navy2);border-bottom:2px solid var(--wood);padding-bottom:4px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:10px 0}
+.card h3{margin:0 0 6px;font-size:1.05rem;color:var(--navy2);cursor:pointer}
+.card h3:hover{text-decoration:underline}
+.card p{margin:6px 0;line-height:1.6;font-size:.95rem}
+.arab{direction:rtl;text-align:right;font-size:1.25rem;line-height:2}
+mark{background:#ffe08a;color:#222;padding:0 2px;border-radius:3px}
+.meta{display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:.82rem;color:var(--muted)}
+.tag{background:var(--wood);color:#3b2a10;padding:1px 8px;border-radius:99px;font-weight:600}
+.meta button{padding:4px 10px;font-size:.8rem;background:var(--navy2);color:#fff}
+.meta a{color:var(--navy2);font-weight:600}
+dialog{width:min(900px,96vw);height:min(86vh,800px);border:0;border-radius:14px;padding:0;background:var(--card);color:var(--text)}
+dialog::backdrop{background:#0008}
+.mh{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--line)}
+.mh b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mb{height:calc(100% - 54px);overflow:auto;padding:14px 18px}
+footer{text-align:center;color:var(--muted);font-size:.8rem;padding:20px}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo"><img src="logo.png" alt="Logo Malika Boarding School"></div>
+  <h1>Maktabah Malika <span class="ar" style="font-size:1.5rem">· مكتبة مالك</span></h1>
+  <p>Pondok Pesantren Malika · Malika Boarding School</p>
+</header>
+
+<div class="box">
+  <form id="f">
+    <input type="search" id="q" placeholder="Ketik kata kunci nama kitab… (mis. Jurumiyah, Fathul Muin)" autofocus>
+    <button>Cari</button>
+  </form>
+  <div class="chips">
+    <label><input type="checkbox" value="sanusi" checked>21 Kitab</label>
+  </div>
+</div>
+
+<main>
+  <div class="status" id="st">Masukkan kata kunci untuk mulai mencari kitab.</div>
+  <div id="res"></div>
+</main>
+
+<dialog id="dlg">
+  <div class="mh"><b id="mt"></b><span><button id="mc">Tutup</button></span></div>
+  <div class="mb" id="mbody"></div>
+</dialog>
+<footer>Maktabah Malika Boarding School · Niat karena Allah, amalkan ilmu.</footer>
+
 <script src="config.js"></script>
 <script>
 const C = window.MALIKA_CONFIG || {};
@@ -16,89 +89,46 @@ function hl(text, q){
   return t;
 }
 
-// ---------- Sumber 1: API 21 Kitab (Ahmad Sanusi) ----------
+// Pencarian Kitab Ahmad Sanusi
 async function searchSanusi(q){
   const S = C.sanusi; if (!S || !S.enabled) return [];
   const headers = {};
   if (S.apiKey && S.apiKeyHeader) headers[S.apiKeyHeader] = S.apiKey;
 
-  // 1. Ambil daftar semua kitab dulu untuk dicocokkan/dipilih
-  const uKitab = new URL(S.baseUrl + "/v1/kitub"); // atau /v1/kitab sesuai endpoint
   let r = await fetch(`${S.baseUrl}/v1/kitab`, { headers });
   if (!r.ok) throw new Error("21 Kitab: HTTP " + r.status);
-  const j = await r.json();
+  let j = await r.json();
   let listKitab = Array.isArray(j) ? j : (j.data?.results || j.data || j.results || []);
 
-  let results = [];
-  
-  // 2. Cari kitab yang relevan atau lakukan pencarian teks langsung jika API mendukung endpoint search per kitab
-  for (let kitab of listKitab.slice(0, 10)) {
-    let slug = kitab.slug || kitab.id;
-    try {
-      // Cek pencarian kata kunci di dalam kitab (Endpoint: /v1/kitab/{slug}/search?q=...)
-      let rSearch = await fetch(`${S.baseUrl}/v1/kitab/${slug}/search?q=${encodeURIComponent(q)}`, { headers });
-      if (rSearch.ok) {
-        let jSearch = await rSearch.json();
-        let items = jSearch.data || jSearch.results || jSearch || [];
-        if (Array.isArray(items) && items.length > 0) {
-          items.forEach(it => {
-            results.push({
-              src: "21 Kitab",
-              title: `${kitab.nama || kitab.judul || slug} — ${it.bab || it.judul_bab || 'Bab Terkait'}`,
-              text: it.teks_indonesia || it.terjemah || it.content || it.teks || "",
-              arab: it.teks_arab || it.arab || "",
-              author: kitab.penulis || "Kandungan Kitab Klasik",
-              slug: slug,
-              babNomor: it.nomor_bab || it.nomor || 1,
-              url: "",
-              raw: it
-            });
-          });
-        }
-      }
-    } catch(err) {
-      // Lewati jika salah satu kitab gagal di-fetch
-    }
-  }
+  // Filter kitab berdasarkan kata kunci pencarian
+  const matched = listKitab.filter(k => {
+    let nama = (k.nama || k.judul || "").toLowerCase();
+    let penulis = (k.penulis || "").toLowerCase();
+    let query = q.toLowerCase();
+    return nama.includes(query) || penulis.includes(query);
+  });
 
-  // Jika pencarian spesifik kosong, tampilkan daftar kitab yang namanya cocok dengan kata kunci
-  if (results.length === 0) {
-    const matched = listKitab.filter(k => (k.nama || k.judul || "").toLowerCase().includes(q.toLowerCase()));
-    return matched.map(k => ({
-      src: "21 Kitab",
-      title: k.nama || k.judul || "Kitab Kuning",
-      text: k.deskripsi || `Kategori: ${k.kategori || 'Klasik'}. Total Bab: ${k.total_bab || 'Lengkap'}. Klik 'Baca di sini' untuk melihat daftar bab dan membaca isi kitab secara utuh sampai selesai.`,
-      arab: k.arab || "",
-      author: k.penulis || "Turats Islam",
-      slug: k.slug || k.id,
-      babNomor: 1,
-      url: "",
-      raw: k
-    }));
-  }
-
-  return results;
+  return matched.map(k => ({
+    src: "21 Kitab",
+    title: k.nama || k.judul || "Kitab Kuning",
+    text: k.deskripsi || `Kategori: ${k.kategori || 'Klasik'}. Total Bab: ${k.total_bab || 'Lengkap'}. Klik tombol di bawah untuk membaca isi kitab dan daftar bab secara utuh sampai selesai.`,
+    arab: k.arab || "",
+    author: k.penulis || "Turats Islam",
+    slug: k.slug || k.id,
+    url: ""
+  }));
 }
 
-// ---------- Sumber Lain (Opsional/Mock aman) ----------
-async function searchGBooks(q){ return []; }
-async function searchOpenAlex(q){ return []; }
-
-// ---------- Render & Interaksi ----------
-const sources = { sanusi: searchSanusi };
 let store = [];
 
 function card(it, i, q){
-  const arab = it.arab && hasArab(it.arab) ? `<p class="arab">${hl(strip(it.arab).slice(0, 250), q)}</p>` : "";
-  const snippetText = strip(it.text).slice(0, 300);
   return `<div class="card">
     <h3 data-i="${i}">${hl(it.title, q)}</h3>
-    ${arab}
-    <p>${hl(snippetText, q)}…</p>
+    <p>${hl(it.text, q)}</p>
     <div class="meta">
       <span class="tag">${esc(it.src)}</span>
       <span>✍ ${esc(it.author)}</span>
-      <button data-i="${i}">Baca Selengkapnya & Bab ↗</button>
+      <button data-i="${i}">Buka Daftar Bab & Baca ↗</button>
     </div>
   </div>`;
 }
@@ -106,7 +136,7 @@ function card(it, i, q){
 $("#f").addEventListener("submit", async e => {
   e.preventDefault();
   const q = $("#q").value.trim(); if (!q) return;
-  $("#st").textContent = "Mencari isi kitab “" + q + "” di server Ahmad Sanusi…"; 
+  $("#st").textContent = "Mencari kitab “" + q + ”…"; 
   $("#res").innerHTML = ""; 
   store = [];
 
@@ -115,34 +145,32 @@ $("#f").addEventListener("submit", async e => {
     store = dataKitab;
     let html = "";
     if (dataKitab.length > 0) {
-      html += `<div class="group">Hasil Kitab & Bab (${dataKitab.length})</div>`;
+      html += `<div class="group">Hasil Ditemukan (${dataKitab.length})</div>`;
       dataKitab.forEach((it, i) => { html += card(it, i, q); });
     }
     $("#res").innerHTML = html;
-    $("#st").textContent = dataKitab.length ? `${dataKitab.length} hasil ditemukan dari 21 Kitab.` : "Tidak ada hasil kitab yang cocok.";
+    $("#st").textContent = dataKitab.length ? `${dataKitab.length} kitab ditemukan.` : "Tidak ada kitab yang cocok dengan kata kunci tersebut.";
   } catch (err) {
     $("#st").textContent = "⚠ Terjadi kendala koneksi API: " + err.message;
   }
 });
 
-// Modal Detail Baca Kitab Per Bab & Navigasi
+// Modal Detail Kitab & Daftar Bab
 $("#res").addEventListener("click", async e => {
   const el = e.target.closest("[data-i]"); if (!el) return;
   const it = store[+el.dataset.i];
   const b = $("#mbody");
   $("#mt").textContent = it.title; 
-  $("#mo").style.display = "none";
-  b.innerHTML = "<p>Memuat isi kitab dan daftar bab...</p>";
+  b.innerHTML = "<p>Memuat daftar bab kitab...</p>";
   $("#dlg").showModal();
 
   try {
     const S = C.sanusi;
     const headers = S.apiKey ? { [S.apiKeyHeader || "X-API-Key"]: S.apiKey } : {};
     
-    // Ambil detail kitab lengkap + daftar bab (Endpoint: /v1/kitab/{slug})
-    const resDetail = await fetch(`${S.baseUrl}/v1/kitab/${it.slug}`, { headers });
-    const detailJson = await resDetail.json();
-    const detail = detailJson.data || detailJson;
+    let resDetail = await fetch(`${S.baseUrl}/v1/kitab/${it.slug}`, { headers });
+    let detailJson = await resDetail.json();
+    let detail = detailJson.data || detailJson;
 
     let babList = detail.daftar_bab || detail.babs || detail.chapters || [];
     
@@ -150,54 +178,81 @@ $("#res").addEventListener("click", async e => {
     htmlContent += `<p><b>Penulis:</b> ${esc(detail.penulis || it.author)} | <b>Total Bab:</b> ${babList.length || 'Tersedia'}</p><hr style="border:0;border-top:1px solid var(--line);margin:10px 0">`;
     
     if (babList.length > 0) {
-      htmlContent += `<h3>Daftar Bab (Klik untuk Baca):</h3><ul style="padding-left: 20px; line-height: 1.8;">`;
+      htmlContent += `<h3>Pilih Bab untuk Dibaca:</h3><ul style="padding-left: 20px; line-height: 2;">`;
       babList.forEach((bab, idx) => {
         let noBab = bab.nomor || idx + 1;
         let judulBab = bab.judul || bab.title || `Bab ${noBab}`;
-        htmlContent += `<li><a href="#" onclick="muatTeksBab('${it.slug}', ${noBab}); return false;" style="color:var(--navy2); font-weight:600;">${esc(judulBab)}</a></li>`;
+        htmlContent += `<li><a href="#" onclick="muatTeksBab('${it.slug}', ${noBab}); return false;" style="color:var(--navy2); font-weight:600; text-decoration:underline;">${esc(judulBab)}</a></li>`;
       });
       htmlContent += `</ul>`;
     } else {
-      htmlContent += `<div style="direction:rtl; font-size:1.2rem; line-height:2; background:var(--card); padding:10px;">${it.arab || ''}</div>`;
-      htmlContent += `<p style="line-height:1.8; margin-top:15px;">${esc(it.text)}</p>`;
+      htmlContent += `<p>Daftar bab tidak tersedia langsung, teks lengkap:</p>`;
+      htmlContent += `<p style="line-height:1.8;">${esc(it.text)}</p>`;
     }
 
     b.innerHTML = htmlContent;
   } catch(err) {
-    b.innerHTML = `<p>Gagal memuat detail kitab: ${err.message}</p><p style="line-height:1.8">${esc(it.text)}</p>`;
+    b.innerHTML = `<p>Gagal memuat detail kitab: ${err.message}</p>`;
   }
 });
 
-// Fungsi pembantu untuk memuat isi bab spesifik saat diklik
+// Fungsi Navigasi Membaca Per Bab sampai Selesai
 async function muatTeksBab(slug, nomorBab) {
   const b = $("#mbody");
   b.innerHTML = `<p>Memuat Bab ${nomorBab}...</p>`;
   try {
     const S = C.sanusi;
     const headers = S.apiKey ? { [S.apiKeyHeader || "X-API-Key"]: S.apiKey } : {};
-    const resBab = await fetch(`${S.baseUrl}/v1/kitab/${slug}/bab/${nomorBab}`, { headers });
-    const jBab = await resBab.json();
-    const dataBab = jBab.data || jBab;
+    let resBab = await fetch(`${S.baseUrl}/v1/kitab/${slug}/bab/${nomorBab}`, { headers });
+    let jBab = await resBab.json();
+    let dataBab = jBab.data || jBab;
 
     let kontenArab = dataBab.teks_arab || dataBab.arab || "";
-    // PERBAIKAN: Spasi dihapus dan penamaan variabel diseragamkan menjadi kontonIndo
-    let kontenIndo = dataBab.teks_indonesia || dataBab.terjemah || dataBab.konten || "";
+    let kontenIndo = dataBab.teks_indonesia || dataBab.terjemah || dataBab.konten || dataBab.teks || "";
 
     b.innerHTML = `
-      <button onclick="history.back()" style="margin-bottom:10px; padding:4px 10px; font-size:0.8rem;">← Kembali ke Daftar Bab</button>
-      <h3>${esc(dataBab.judul || 'Bab ' + nomorBab)}</h3>
-      ${kontenArab ? `<div class="arab" style="background:var(--card); padding:12px; border-radius:8px; margin-bottom:15px;">${kontenArab}</div>` : ''}
-      <p style="line-height:1.9; font-size:1rem;">${kontenIndo}</p>
-      <div style="margin-top:20px; display:flex; justify-content:space-between;">
-        <button onclick="muatTeksBab('${slug}', ${nomorBab - 1})" ${nomorBab <= 1 ? 'disabled style="opacity:0.5"' : ''}>← Bab Sebelumnya</button>
+      <button onclick="bukaKembaliDetail('${slug}')" style="margin-bottom:12px; padding:6px 12px; font-size:0.85rem;">← Kembali ke Daftar Bab</button>
+      <h3 style="color:var(--navy2);">${esc(dataBab.judul || 'Bab ' + nomorBab)}</h3>
+      ${kontenArab ? `<div class="arab" style="background:var(--card); padding:16px; border-radius:8px; margin-bottom:15px; border:1px solid var(--line);">${kontenArab}</div>` : ''}
+      <p style="line-height:2; font-size:1.05rem;">${kontenIndo}</p>
+      <div style="margin-top:25px; display:flex; justify-content:space-between; gap:10px;">
+        <button onclick="muatTeksBab('${slug}', ${nomorBab - 1})" ${nomorBab <= 1 ? 'disabled style="opacity:0.4; cursor:not-allowed;"' : ''}>← Bab Sebelumnya</button>
         <button onclick="muatTeksBab('${slug}', ${nomorBab + 1})">Bab Selanjutnya →</button>
       </div>
     `;
   } catch(err) {
-    b.innerHTML = `<p>Gagal memuat teks bab. Pastikan koneksi internet stabil.</p>`;
+    b.innerHTML = `<p>Gagal memuat isi teks bab. Silakan coba lagi.</p>`;
+  }
+}
+
+async function bukaKembaliDetail(slug) {
+  const it = store.find(x => x.slug === slug);
+  if (it) {
+    // Memicu ulang pemuatan daftar bab
+    const fakeEvent = { target: document.querySelector(`[data-i]`) };
+    // Atau refresh langsung isi modal dengan detail kitab
+    const S = C.sanusi;
+    const headers = S.apiKey ? { [S.apiKeyHeader || "X-API-Key"]: S.apiKey } : {};
+    let resDetail = await fetch(`${S.baseUrl}/v1/kitab/${slug}`, { headers });
+    let detailJson = await resDetail.json();
+    let detail = detailJson.data || detailJson;
+    let babList = detail.daftar_bab || detail.babs || detail.chapters || [];
+    
+    let b = $("#mbody");
+    let htmlContent = `<h2>${esc(detail.nama || it.title)}</h2><hr style="border:0;border-top:1px solid var(--line);margin:10px 0">`;
+    htmlContent += `<h3>Pilih Bab untuk Dibaca:</h3><ul style="padding-left: 20px; line-height: 2;">`;
+    babList.forEach((bab, idx) => {
+      let noBab = bab.nomor || idx + 1;
+      let judulBab = bab.judul || bab.title || `Bab ${noBab}`;
+      htmlContent += `<li><a href="#" onclick="muatTeksBab('${slug}', ${noBab}); return false;" style="color:var(--navy2); font-weight:600; text-decoration:underline;">${esc(judulBab)}</a></li>`;
+    });
+    htmlContent += `</ul>`;
+    b.innerHTML = htmlContent;
   }
 }
 
 $("#mc").onclick = () => $("#dlg").close();
 $("#dlg").addEventListener("click", e => { if (e.target.id === "dlg") e.target.close(); });
 </script>
+</body>
+</html>
