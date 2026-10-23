@@ -10,10 +10,10 @@ window.MALIKA_CONFIG = {
   sanusi: {
     enabled: true,
     baseUrl: "https://api.ahmadsanusi.com",
-    searchPath: "/search",            // ganti sesuai endpoint pencarian di Swagger
+    searchPath: "/v1/kitab",          // dari Swagger: GET /v1/kitab (cari nama/pengarang/kategori)
     queryParam: "q",                  // nama parameter kata kunci
     extraParams: { limit: 10 },       // parameter tambahan
-    apiKey: "",                       // key 21 Kitab (lebih aman via proxy)
+    apiKey: "ask_qiSMHUMto-8dO1PByPr_C1lMbjtteTnY86LkKGwUB4w", // key 21 Kitab (terlihat publik di GitHub Pages)
     apiKeyHeader: "X-API-Key"         // nama header; kosongkan jika key dikirim lewat query
   }
 };
