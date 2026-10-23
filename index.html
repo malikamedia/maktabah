@@ -4,12 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Maktabah Malika Boarding School</title>
+<link rel="icon" href="favicon.png">
 <style>
 :root{--navy:#14264a;--navy2:#1f3a6e;--cream:#faf5ec;--wood:#d9b98a;--card:#fff;--text:#1d2433;--muted:#667085;--line:#e6dccb}
 @media(prefers-color-scheme:dark){:root{--cream:#0f1729;--card:#18233d;--text:#eef1f7;--muted:#a3adc2;--line:#2a3857;--navy:#e8d9bd;--navy2:#d9b98a}}
 *{box-sizing:border-box}
 body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--cream);color:var(--text)}
-header{background:linear-gradient(135deg,#14264a,#24467f);color:#fff;text-align:center;padding:36px 16px 56px}
+header{background:linear-gradient(180deg,#14264acc,#14264aee),url(foto.jpg) center/cover;color:#fff;text-align:center;padding:28px 16px 64px}
+.logo{background:#fff;border-radius:18px;padding:10px 18px;display:inline-block;box-shadow:0 4px 18px #0004}
+.logo img{height:110px;width:auto;display:block}
 header h1{margin:0;font-size:1.8rem}header p{margin:6px 0 0;opacity:.85}
 .ar{font-size:1.4rem;margin-bottom:4px}
 .box{max-width:820px;margin:-30px auto 0;padding:0 14px}
@@ -43,9 +46,9 @@ footer{text-align:center;color:var(--muted);font-size:.8rem;padding:20px}
 </head>
 <body>
 <header>
-  <div class="ar">مكتبة مالك</div>
-  <h1>Maktabah Malika</h1>
-  <p>Pondok Pesantren Malika · Malika Islamic School</p>
+  <div class="logo"><img src="logo.png" alt="Logo Malika Boarding School"></div>
+  <h1>Maktabah Malika <span class="ar" style="font-size:1.5rem">· مكتبة مالك</span></h1>
+  <p>Pondok Pesantren Malika · Malika Boarding School</p>
 </header>
 
 <div class="box">
@@ -104,7 +107,10 @@ async function searchSanusi(q){
   Object.entries(S.extraParams || {}).forEach(([k, v]) => u.searchParams.set(k, v));
   const headers = {};
   if (S.apiKey && S.apiKeyHeader) headers[S.apiKeyHeader] = S.apiKey;
-  const r = await fetch(u, { headers });
+  let r = await fetch(u, { headers });
+  if ((r.status === 401 || r.status === 403) && S.apiKey) {
+    r = await fetch(u, { headers: { Authorization: "Bearer " + S.apiKey } });
+  }
   if (!r.ok) throw new Error("21 Kitab: HTTP " + r.status);
   const j = await r.json();
   // Penormal tolerant: cari array hasil di respons apa pun
