@@ -3,8 +3,8 @@
 // dilihat siapa saja. Jangan isi key rahasia di sini kecuali sudah dibatasi
 // (lihat README). Idealnya key 21 Kitab lewat proxy (Cloudflare Worker).
 window.MALIKA_CONFIG = {
-  googleBooksKey: "",          // Google Books API key (batasi dengan HTTP referrer!)
-  openAlexMailto: "",          // OpenAlex tidak butuh key; isi email agar masuk "polite pool"
+  googleBooksKey: "AIzaSyAtZPC5BHLz_9sWrwy6lJL2cyXRQrttGm8",          // Google Books API key (batasi dengan HTTP referrer!)
+  openAlexMailto: "AIzaSyAJq1ohtLjh6jxMTiqnRzmc-K4LqsWR9gY",          // OpenAlex tidak butuh key; isi email agar masuk "polite pool"
 
   // Ahmad Sanusi API (21 Kitab) — SESUAIKAN setelah cek https://api.ahmadsanusi.com/docs
   sanusi: {
